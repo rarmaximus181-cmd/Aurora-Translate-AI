@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>AuroraTranslate</AssemblyName>
+    <RootNamespace>AuroraTranslate</RootNamespace>
+    <Version>2.0.0</Version>
+    <Company>Aurora Translate</Company>
+    <Product>Aurora Translate</Product>
+    <ApplicationIcon>Assets\aurora.ico</ApplicationIcon>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <PublishSingleFile>true</PublishSingleFile>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <SelfContained>true</SelfContained>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="System.Speech" Version="10.0.0" />
+    <PackageReference Include="WpfAnimatedGif" Version="2.0.2" />
+    <Compile Remove="Tests\**" />
+    <Resource Include="Assets\aurora.ico" />
+    <EmbeddedResource Include="Assets\piper_windows_amd64.zip" LogicalName="AuroraTranslate.Assets.piper_windows_amd64.zip" />
+  </ItemGroup>
+</Project>

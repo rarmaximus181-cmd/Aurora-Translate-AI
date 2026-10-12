@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <EnableDefaultPageItems>false</EnableDefaultPageItems>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Version>2.0.0</Version>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="UpdateChecks.cs" />
+    <Compile Include="..\..\Models.cs" />
+    <Compile Include="..\..\Services\AppStore.cs" />
+    <Compile Include="..\..\Services\UpdateService.cs" />
+    <Compile Include="..\..\UpdateRequiredWindow.xaml.cs" Link="UpdateRequiredWindow.xaml.cs" />
+    <Page Include="..\..\UpdateRequiredWindow.xaml" Link="UpdateRequiredWindow.xaml" />
+    <ProjectReference Include="Fixture\UpdateFixture.csproj" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+  <Target Name="CopyUpdateFixture" AfterTargets="Build">
+    <ItemGroup><FixtureFiles Include="Fixture\bin\$(Configuration)\net10.0-windows\*" /></ItemGroup>
+    <Copy SourceFiles="@(FixtureFiles)" DestinationFolder="$(OutDir)Fixture" />
+  </Target>
+</Project>

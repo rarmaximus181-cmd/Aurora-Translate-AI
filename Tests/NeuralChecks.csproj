@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="System.Speech" Version="10.0.0" />
+    <Compile Include="neural-voice-tests.cs" />
+    <Compile Include="..\Models.cs" />
+    <Compile Include="..\Services\AppStore.cs" />
+    <Compile Include="..\Services\VoiceLibraryService.cs" />
+    <Compile Include="..\Services\VoiceService.cs" />
+    <EmbeddedResource Include="..\Assets\piper_windows_amd64.zip" LogicalName="AuroraTranslate.Assets.piper_windows_amd64.zip" />
+  </ItemGroup>
+</Project>

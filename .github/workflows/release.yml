@@ -1,0 +1,44 @@
+name: Build and publish Aurora
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: aurora-main-release
+  cancel-in-progress: false
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Check bundled engine
+        shell: pwsh
+        run: |
+          $expected = 'f3c58906402b24f3a96d92145f58acba6d86c9b5db896d207f78dc80811efcea'
+          if ((Get-FileHash Assets/piper_windows_amd64.zip -Algorithm SHA256).Hash.ToLowerInvariant() -ne $expected) { throw 'Speech engine checksum mismatch.' }
+      - name: Test conversation behavior
+        shell: pwsh
+        run: dotnet run --project Tests/ChatUpgradeChecks/ChatUpgradeChecks.csproj -c Release
+      - name: Test update verification
+        shell: pwsh
+        run: dotnet run --project Tests/UpdateChecks/UpdateChecks.csproj -c Release
+      - name: Build release assets
+        shell: pwsh
+        run: |
+          $version = '2.0.${{ github.run_number }}'
+          ./Build/Prepare-Release.ps1 -Version $version
+          "AURORA_VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Append
+      - name: Publish verified Windows release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          gh release create "v$env:AURORA_VERSION" ReleaseArtifacts/AuroraTranslate.exe ReleaseArtifacts/update.json ReleaseArtifacts/Aurora-Translate-Portable.zip ReleaseArtifacts/Aurora-Native-Source.zip --title "Aurora Translate $env:AURORA_VERSION" --notes-file CHANGELOG.md --target '${{ github.sha }}' --latest
