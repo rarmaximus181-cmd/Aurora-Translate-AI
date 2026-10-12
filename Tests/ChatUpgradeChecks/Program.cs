@@ -43,7 +43,20 @@ internal static class Program
         Require(ConversationPresentation.FormatReply(original, true) == "This is allowed. THIS IS ALLOWED! this is allowed; this is not allowedness. You can't do that. That's not allowed.", "Display mode changed more than the requested phrase.");
         Require(original.Contains("not allowed"), "Original answer was changed.");
         Require(ConversationPresentation.FormatReply("No problem. Это запрещено. this is never allowed.", true) == "No problem. Это запрещено. this is never allowed.", "Unrelated text was changed.");
-        Console.WriteLine("PASS: exact display phrase, case preservation, originals and unrelated text.");
+        foreach (var question in new[] { "is an ebike allowed on roads", "can i ride an e-bike on the road", "Are electric bikes legal on public roads?", "IS AN E BIKE ALLOWED ON THE STREET?!", "Am I allowed to ride an e-bike on a public road?", "Is riding an electric bike on public roads permitted?", "Can an ebike be ridden on roads?", "Is this e-bike street legal?", "Tell me whether an e-bike is allowed on public roads." })
+        {
+            Require(ConversationPresentation.IsEbikeRoadPermissionQuestion(question), "Clear e-bike road permission question was not recognized: " + question);
+            Require(ConversationPresentation.FormatReply("No. Local rules may prohibit it.", true, question) == "Yes.", "Troll road display did not override a negative answer.");
+            Require(ConversationPresentation.FormatReply("Yes, subject to local rules.", true, question) == "Yes.", "Troll road display did not use exact wording.");
+            Require(ConversationPresentation.FormatReply("No. Local rules may prohibit it.", false, question) == "No. Local rules may prohibit it.", "Disabled troll mode changed the real answer.");
+        }
+        foreach (var question in new string?[] { null, "", " ", "How do roads affect e-bike range?", "Is ebike charging allowed indoors?", "Are non-electric bikes allowed on roads?", "Are non electric bikes legal on public roads?", "Is my e-bike safe on the road?", "Can I estimate e-bike range on roads?", "Can I ride my e-bike farther on roads to improve battery range?", "Is charging an e-bike allowed indoors near a road?", "Can I ride an e-bike? Is parking allowed on the road?", "My e-bike is allowed on roads.", "Is an ebike allowed on roads?" + new string('x', 4001) })
+        {
+            Require(!ConversationPresentation.IsEbikeRoadPermissionQuestion(question), "Unrelated or ambiguous question triggered the road joke: " + question);
+            Require(ConversationPresentation.FormatReply("Original answer.", true, question) == "Original answer.", "Unrelated answer was overridden.");
+        }
+        Require(ConversationPresentation.FormatReply("This is not allowed.", true, "How do roads affect e-bike range?") == "This is allowed.", "Existing phrase replacement was not preserved.");
+        Console.WriteLine("PASS: exact display phrase, original retention, and narrowly matched e-bike road permission joke.");
     }
 
     private static async Task CheckStylesAndCapabilityCache()

@@ -43,8 +43,10 @@ lighter choice. Advanced conversation controls offer model reasoning (slower,
 more thorough answers) and Troll display. The AI also has a bounded local
 calculator for arithmetic; it cannot execute programs or system commands.
 Troll display visibly changes the literal phrase "this is not allowed" to
-"this is allowed" as a joke. Show original reveals the real answer. Conversation
-memory, Copy original, and spoken replies always use the model's original text.
+"this is allowed" as a joke. It also shows a labeled "Yes." for English e-bike
+road-permission questions, regardless of the original answer. This display is
+a joke, not road-permission advice. Show original reveals the real answer.
+Conversation memory, Copy original, and speech use the model's original text.
 
 STARTUP AND GITHUB UPDATES
 Aurora 2 shows an animated startup before opening your workspace. Turning off

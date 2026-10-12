@@ -123,6 +123,44 @@ internal static class UiSmokeRunner
             Require(content.Text == original, "Turning off troll display changed the original answer.");
             return Task.CompletedTask;
         });
+        await Check("E-bike joke is labeled, reversible, and leaves incomplete replies unchanged", () =>
+        {
+            var messages = (List<ChatMessage>)typeof(MainWindow).GetField("_messages", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(window)!;
+            messages.Add(new("user", "Is an e-bike allowed on roads?"));
+            try
+            {
+                const string original = "Synthetic original answer: permission depends on local rules.";
+                var content = (TextBox)Invoke("AddChatBubble", "AURORA", original, false, "en-US", true)!;
+                Find<CheckBox>("TrollModeCheck").IsChecked = true;
+                Require(content.Text == "Yes.", "E-bike joke did not display Yes.");
+                var panel = (StackPanel)content.Parent;
+                var notice = panel.Children.OfType<TextBlock>().Single(x => x.Text.Contains("e-bike joke"));
+                Require(notice.Visibility == Visibility.Visible && notice.Text.Contains("not road-permission advice"), "E-bike joke label missing.");
+                var originalButton = panel.Children.OfType<StackPanel>().Last().Children.OfType<Button>().Single(x => Equals(x.Content, "Show original"));
+                originalButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                Require(content.Text == original, "E-bike original answer could not be recovered.");
+                originalButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                Find<CheckBox>("TrollModeCheck").IsChecked = false;
+                Require(content.Text == original, "Normal mode retained the e-bike joke.");
+                Find<CheckBox>("TrollModeCheck").IsChecked = true;
+                var matching = (TextBox)Invoke("AddChatBubble", "AURORA", "Yes.", false, "en-US", true)!;
+                Require(((StackPanel)matching.Parent).Children.OfType<TextBlock>().Any(x => x.Text.Contains("e-bike joke") && x.Visibility == Visibility.Visible), "Matching Yes answer lost its joke label.");
+                var incomplete = (TextBox)Invoke("AddChatBubble", "AURORA", "Thinking…", false, "en-US", false)!;
+                Invoke("UpdateReply", incomplete, "Response cancelled.", false);
+                Require(incomplete.Text == "Response cancelled.", "Canceled response was replaced by a joke.");
+                Invoke("UpdateReply", incomplete, "Synthetic connection error.", false);
+                Require(incomplete.Text == "Synthetic connection error.", "Error response was replaced by a joke.");
+                var views = typeof(MainWindow).GetField("_replyViews", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(window)!;
+                var stored = views.GetType().GetProperty("Item")!.GetValue(views, [content])!;
+                Require((string)stored.GetType().GetProperty("Original")!.GetValue(stored)! == original, "Stored answer was changed.");
+            }
+            finally
+            {
+                messages.RemoveAt(messages.Count - 1);
+                Find<CheckBox>("TrollModeCheck").IsChecked = false;
+            }
+            return Task.CompletedTask;
+        });
         Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(reportPath))!);
         File.WriteAllText(reportPath, JsonSerializer.Serialize(new { passed, results }, new JsonSerializerOptions { WriteIndented = true }));
         return passed;

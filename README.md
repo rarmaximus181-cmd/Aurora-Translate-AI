@@ -12,7 +12,7 @@ A Windows desktop workspace for translation, local AI conversation, and offline 
 - Four animated themes and custom PNG/GIF backgrounds.
 - Discord sign-in and a cached profile image after one-time Discord application setup.
 - An animated startup and GitHub update checks with verified downloads and required updates.
-- An optional **Troll display** joke that rewrites the literal phrase “this is not allowed” on screen. It is visibly marked and does not change model prompts, original answers, conversation context, copying, or speech.
+- An optional **Troll display** joke that rewrites the literal phrase “this is not allowed” on screen. English e-bike road-permission questions also display a labeled “Yes.” joke, regardless of the original answer. Enable it under **Conversation → Advanced → Troll display**, and use **Show original** to see the model's answer. The joke does not change model prompts, original answers, conversation context, copying, or speech; it is not road-permission advice.
 
 ## Get started
 

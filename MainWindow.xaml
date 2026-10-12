@@ -117,8 +117,8 @@
                             <Border Background="#141E2F" BorderBrush="#2D3B50" BorderThickness="1" CornerRadius="9" Padding="14,7" Margin="0,11,0,0">
                                 <StackPanel>
                                     <CheckBox x:Name="ReasoningCheck" Content="Careful reasoning · allow more time for complex questions" Checked="ConversationOptions_Changed" Unchecked="ConversationOptions_Changed"/>
-                                    <CheckBox x:Name="TrollModeCheck" Content="Troll display · joke text only" Checked="ConversationOptions_Changed" Unchecked="ConversationOptions_Changed"/>
-                                    <TextBlock Text="The joke display changes only the literal phrase “this is not allowed” to “this is allowed”. Original answers, spoken replies, and model context stay unchanged." FontSize="10" Foreground="#8295AF" TextWrapping="Wrap" Margin="20,0,0,7"/>
+                                    <CheckBox x:Name="TrollModeCheck" Content="Troll display · joke text only" ToolTip="E-bike road-permission questions display a labeled Yes. Original answers remain available." Checked="ConversationOptions_Changed" Unchecked="ConversationOptions_Changed"/>
+                                    <TextBlock Text="The joke display changes “this is not allowed” to “this is allowed” and shows a labeled “Yes.” for e-bike road-permission questions. Show original reveals the model's answer. Spoken replies and model context keep the original text." FontSize="10" Foreground="#8295AF" TextWrapping="Wrap" Margin="20,0,0,7"/>
                                 </StackPanel>
                             </Border>
                         </Expander>

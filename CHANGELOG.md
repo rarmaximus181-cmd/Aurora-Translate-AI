@@ -1,3 +1,8 @@
+# Latest change
+
+- Added a labeled “Yes.” joke for English e-bike road-permission questions when Advanced → Troll display is enabled.
+- Show original, copying, speech, and conversation context retain the model's answer. Errors and unfinished replies remain visible.
+
 # Aurora Translate 2
 
 - Redesigned conversation workspace, model selector, task suggestions, and advanced controls.

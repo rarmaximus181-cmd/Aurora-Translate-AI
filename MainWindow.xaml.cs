@@ -43,6 +43,7 @@ public partial class MainWindow : Window
         public required TextBlock Notice { get; init; }
         public required Button OriginalButton { get; init; }
         public required StackPanel Actions { get; init; }
+        public string UserQuestion { get; init; } = "";
         public string Original { get; set; } = "";
         public bool ShowOriginal { get; set; }
         public bool Complete { get; set; }
@@ -457,7 +458,9 @@ public partial class MainWindow : Window
             var copy = new Button { Content = "Copy original", Style = (Style)FindResource("SmallButton"), Padding = new Thickness(9, 5, 9, 5), Background = Brushes.Transparent, BorderThickness = new Thickness(0), Foreground = ParseBrush("#8DA6C7") };
             var speak = new Button { Content = "Listen", Style = (Style)FindResource("SmallButton"), Padding = new Thickness(9, 5, 9, 5), Background = Brushes.Transparent, BorderThickness = new Thickness(0), Foreground = ParseBrush("#8DA6C7") };
             var original = new Button { Content = "Show original", Style = (Style)FindResource("SmallButton"), Padding = new Thickness(9, 5, 9, 5), Background = ParseBrush("#2A2B29"), BorderThickness = new Thickness(0), Foreground = ParseBrush("#D4C693"), Visibility = Visibility.Collapsed, Margin = new Thickness(8, 0, 0, 0) };
-            var view = new ReplyView { Text = content, Notice = notice, OriginalButton = original, Actions = actions, Original = ready ? text : "", Complete = ready };
+            var view = new ReplyView { Text = content, Notice = notice, OriginalButton = original, Actions = actions,
+                UserQuestion = _messages.LastOrDefault(message => message.Role == "user")?.Content ?? "",
+                Original = ready ? text : "", Complete = ready };
             _replyViews.Add(content, view);
             copy.Click += (_, _) => CopyText(view.Original);
             speak.Click += async (_, _) => await SpeakTextAsync(view.Original, language);
@@ -484,11 +487,15 @@ public partial class MainWindow : Window
     private void RenderReply(ReplyView view)
     {
         if (string.IsNullOrEmpty(view.Original)) { view.Actions.Visibility = Visibility.Collapsed; return; }
-        var formatted = ConversationPresentation.FormatReply(view.Original, _settings.TrollMode);
-        var transformed = _settings.TrollMode && !string.Equals(formatted, view.Original, StringComparison.Ordinal);
+        var jokeEnabled = _settings.TrollMode && view.Complete;
+        var ebikeJoke = jokeEnabled && ConversationPresentation.IsEbikeRoadPermissionQuestion(view.UserQuestion);
+        var formatted = ConversationPresentation.FormatReply(view.Original, jokeEnabled, view.UserQuestion);
+        var transformed = jokeEnabled && (ebikeJoke || !string.Equals(formatted, view.Original, StringComparison.Ordinal));
         view.Text.Text = view.ShowOriginal || !transformed ? view.Original : formatted;
         view.Notice.Visibility = transformed ? Visibility.Visible : Visibility.Collapsed;
-        view.Notice.Text = view.ShowOriginal ? "Original model answer · joke display hidden for this reply" : "Troll display · joke text only · original answer unchanged";
+        view.Notice.Text = view.ShowOriginal ? "Original model answer · joke display hidden for this reply"
+            : ebikeJoke ? "Troll display · e-bike joke · not road-permission advice"
+            : "Troll display · joke text only · original answer unchanged";
         view.OriginalButton.Visibility = transformed && view.Complete ? Visibility.Visible : Visibility.Collapsed;
         view.OriginalButton.Content = view.ShowOriginal ? "Show joke display" : "Show original";
         view.Actions.Visibility = view.Complete ? Visibility.Visible : Visibility.Collapsed;
